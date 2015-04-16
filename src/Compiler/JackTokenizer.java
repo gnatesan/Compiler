@@ -88,7 +88,6 @@ public class JackTokenizer {
 			wholeFile = wholeFile.replace(",", " , ");
 		}
 
-		//System.out.println(wholeFile);
 		st = new StringTokenizer(wholeFile);
 		
 	}
@@ -251,9 +250,7 @@ public class JackTokenizer {
 						token = tokenType.SYMBOL;
 						break;
 					}
-			if (nextToken.equals("x")) {
-				System.out.println(token.toString());
-			}
+
 			if (token == tokenType.SYMBOL || token == tokenType.KEYWORD) {
 				return token;
 			}
@@ -365,7 +362,6 @@ public class JackTokenizer {
 		while (this.hasMoreTokens()) {
 			advance();
 			fw.write("<" + tokenType().toString() + "> " + nextToken + " </" + tokenType().toString() + ">");
-			//System.out.println(nextToken);
 			fw.write(System.lineSeparator());
 		}
 		fw.write("</tokens>");
@@ -379,7 +375,6 @@ public class JackTokenizer {
 			k.writeOutput();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			System.out.println("easdf");
 			e.printStackTrace();
 		}
 	}
