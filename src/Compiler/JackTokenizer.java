@@ -6,7 +6,6 @@ import java.util.*;
 public class JackTokenizer {
 		
 		private Scanner in;
-		private String outFile;
 		private String wholeFile = "";
 		private String next;
 		private String nextToken;
@@ -42,7 +41,7 @@ public class JackTokenizer {
 		
 		
 		public JackTokenizer(String inputFile) {
-			outFile = inputFile.replace(".jack", "T.xml");
+			//outFile = inputFile.replace(".jack", "T.xml");
 			try {
 				File f = new File(inputFile);
 				in = new Scanner(f);
