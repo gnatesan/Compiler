@@ -1,4 +1,5 @@
 package Compiler;
+
 import java.io.*;
 import java.util.*;
 
@@ -17,17 +18,19 @@ public class CompilationEngine {
 	
 	JackTokenizer jt = new JackTokenizer("test");
 	
-	public CompilationEngine(String inputFile, String outFile) throws Exception {	
-		in = new Scanner(inputFile);
-		fw = new FileWriter(outFile);
-		JackTokenizer jt = new JackTokenizer(inputFile); 
+	public CompilationEngine(String outFile, JackTokenizer jt) throws Exception {	
+		//fw = new FileWriter(outFile); 
 		
-		compileClass();
+		while (jt.hasMoreTokens()) {
+			jt.advance();
+		// switch statements for calling methods
+			System.out.println(jt.getNextToken());
+			System.out.println(jt.tokenType());
+		}
 		
-	
-			
+		//fw.close();
+		}
 		
-	}
 	
 	/*public void Cot= tokenizer.get();
 		assert += "class"
