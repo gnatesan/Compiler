@@ -113,7 +113,7 @@ public class JackTokenizer {
 	
 	public void advance() {
 		this.nextToken = st.nextToken();
-		
+
 	}
 	
 	public tokenType tokenType() {
@@ -355,7 +355,7 @@ public class JackTokenizer {
 		return nextToken;
 	}
 	
-	
+	/*
 	public void writeOutput() throws IOException {
 		fw.write("<tokens>");
 		fw.write(System.lineSeparator());
@@ -378,4 +378,5 @@ public class JackTokenizer {
 			e.printStackTrace();
 		}
 	}
+	*/
 }
