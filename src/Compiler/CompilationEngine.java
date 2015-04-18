@@ -13,95 +13,110 @@ public class CompilationEngine {
 	
 	private String line;
 	private FileWriter fw;
-	private static ArrayList<String> type; // NEED TO FILL OUT!
-	private static ArrayList<String> subroutineDec; // NEED TO FILL OUT!
-	private static ArrayList<String> classVarDec; // NEED TO FILL OUT!
+	private JackTokenizer test;
 	
 	public CompilationEngine(String outFile, JackTokenizer jt) throws Exception {	
+		test = jt;
 		fw = new FileWriter(outFile); 
-		
-		fw.write(System.lineSeparator());
 		while (jt.hasMoreTokens()) {
 			jt.advance();
 		// switch statements for calling methods
-			System.out.println(jt.getNextToken());
-			System.out.println(jt.tokenType());
-			
-		//	fw.write(jt.tokenType() + " " + jt.getNextToken());
-			//fw.write(System.lineSeparator());
+			System.out.println(jt.getNextToken() + " type: " + jt.tokenType());
+			switch (jt.getNextToken()) {
+				case ("class"): {
+					this.compileClass();
+				}
+				case ("while"): {
+					this.compileWhile();
+				}
+			}
 			
 			
 		}
 		
 		fw.close();
-		}
+	}
 		
 	
-	/*public void Cot= tokenizer.get();
-		assert += "class"
-		parseClassname();
-		t = get(); // {
-		while(peek() is in {field|static}){
-			parseClassVarDec()
-		}
-		while(peek() is in {constructor | function | }){
-			parseSubRoutineDec();
-		}
-			
-		get(); // }mpileSubroutine() {
-		
-	}*/
+
 	
-	public void compileClass() throws IOException{
-		
-			//fw.write();
-			//className();
-		//	compileClassVarDec();
-		//	while (classVarDec.contains(jt.getNextToken()) ){
-		//		compileVarDec();
-		//	}
-			
-		//	while (subroutineDec.contains(jt.getNextToken())){
-		//		compileVarDec(); // NEED TO FILL OUT!
-		//	}
-			
-			
+	public void compileClass() throws IOException{			
+	while (test.hasMoreTokens()) {
+		test.advance();
+		switch (test.getNextToken()) {
+			case ("class"): {
+				this.className();
+			}
+			case ("static"): {
+				this.compileClassVarDec();
+			}
+			case ("field"): {
+				this.compileClassVarDec();
+			}
+			case ("constructor"): {
+				this.compileSubRoutine();
+			}
+			case ("function"): {
+				this.compileSubRoutine();
+			}
+			case ("method"): {
+				this.compileSubRoutine();
+			}
+			case ("void"): {
+				this.compileSubRoutine();
+			}
+		}
+
 		
 	}
 	
-	public void className() throws IOException{
-	//	 jt.advance();
-		// fw.write(jt.getNextToken()); // The class name
-		// jt.advance();
-		// fw.write(jt.getNextToken()); // This will take the "{"
-		
+	
 	}
-	public void compileClassVarDec() throws IOException{
+	
+	public void className(){
+
+	}
+	
+	public void compileClassVarDec(){
 		
-		//while(jt.getNextToken() != ";"){
-		// fw.write(jt.getNextToken());
-		// jt.advance();
-		// } 
 		
-	//fw.write(jt.getNextToken());
-	//jt.advance();
+		
 	} 
 	
 	public void compileSubRoutine(){
-		
-		
-		
+		//get the type, deal with the subroutine Name, and parameter list
+		this.compileParameterList();
+		this.compileStatements();
 	}
+	
 	public void compileParameterList() {
 		
 	}
 	
 	public void compileVarDec() {
 		
+		
 	}
 	
 	public void compileStatements() {
-		
+		test.advance();
+		switch(test.getNextToken()) {
+			case ("let"): {
+				this.compileLet();
+			}
+			case ("if"): {
+				this.compileIf();
+			}
+			case ("while"): {
+				this.compileWhile();
+			}
+			case ("do"): {
+				this.compileDo();
+			}
+			case ("return"): {
+				this.compileReturn();
+			}
+		}
 	}
 	
 	public void compileDo() {

@@ -9,6 +9,7 @@ public class JackTokenizer {
 		private String wholeFile = "";
 		private String next;
 		private String nextToken;
+		private HashMap<String, HashMap<String, HashMap<String, Integer>>> symbolTable;
 		
 
 		private StringTokenizer st;
@@ -351,6 +352,10 @@ public class JackTokenizer {
 			nextToken = nextToken.replaceAll("\"", "");
 			nextToken = nextToken.replaceAll("\n", "");
 			return nextToken;
+		}
+		
+		public HashMap<String, HashMap<String, HashMap<String, Integer>>> getSymbolTable() {
+			return this.symbolTable;
 		}
 		
 		/*
