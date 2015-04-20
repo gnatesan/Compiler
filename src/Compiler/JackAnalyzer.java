@@ -5,7 +5,7 @@ public class JackAnalyzer {
 	
 	private String inputFile = "Square.jack";
 	private String outputFile = "test.txt";
-	
+
 	
 	public static void main (String[] args) throws Exception {
 			JackAnalyzer ja = new JackAnalyzer();

@@ -9,11 +9,10 @@ public class JackTokenizer {
 		private String wholeFile = "";
 		private String next;
 		private String nextToken;
-		private HashMap<String, HashMap<String, HashMap<String, Integer>>> symbolTable;
-		
-
+		int masterCount = 0;
 		private StringTokenizer st;
-
+		String[] allTokens;
+		int var = 0;
 		
 		private tokenType token;
 
@@ -86,9 +85,10 @@ public class JackTokenizer {
 			if (wholeFile.contains(",")) {
 				wholeFile = wholeFile.replace(",", " , ");
 			}
-
-			st = new StringTokenizer(wholeFile);
-			
+			allTokens = wholeFile.split("\\s+");
+			/*for (String s : allTokens)
+				System.out.println(s);*/
+			//st = new StringTokenizer(wholeFile);
 		}
 		
 		
@@ -100,19 +100,15 @@ public class JackTokenizer {
 			return token;
 		}
 		
-		public StringTokenizer getSt() {
-			return st;
-		}
-		
 		public boolean hasMoreTokens() {
-			if (st.hasMoreTokens())
+			if (masterCount != allTokens.length - 1)
 				return true;
 			return false;
 		}
 		
 		public void advance() {
-			this.nextToken = st.nextToken();
-
+			this.nextToken = allTokens[masterCount];
+			masterCount += 1;
 		}
 		
 		public tokenType tokenType() {
@@ -354,8 +350,9 @@ public class JackTokenizer {
 			return nextToken;
 		}
 		
-		public HashMap<String, HashMap<String, HashMap<String, Integer>>> getSymbolTable() {
-			return this.symbolTable;
+		//retrieves value of next token without actually going to the next token
+		public String peek() {
+			return allTokens[masterCount + 1];
 		}
 		
 		/*
@@ -371,15 +368,15 @@ public class JackTokenizer {
 			fw.write(System.lineSeparator());
 			fw.close();
 		}
-		
+		*/
 		public static void main (String[] args) {
 			try {
 				JackTokenizer k = new JackTokenizer("Square.jack");
-				k.writeOutput();
+				//k.writeOutput();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		*/
+		
 }
