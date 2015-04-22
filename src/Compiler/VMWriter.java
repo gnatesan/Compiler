@@ -43,7 +43,7 @@ public void WriteFunction(){
 
 public void WriteReturn() {
 	// TODO Auto-generated method stub
-	fw.write("pop " +   )
+	//fw.write("pop " +   )
 }
 
 

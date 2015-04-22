@@ -4,38 +4,26 @@ public class Symbol {
 
 	private String name = "";
 	private String type = "";
-	private String kind = "";
-	private int identiferIndex = 0;
-	private int kindIndex = 0;
+	private int count;
 	
-	
-	public Symbol(String name, String type, String kind, int identiferIndex, int kindIndex) {
+	public Symbol(String n, String t, int value) {
 		this.name = name;
 		this.type = type;
-		this.kind = kind;
-		this.identiferIndex = identiferIndex;
-		this.kindIndex = kindIndex;
-		
+		this.count = value;
 	}
-	
+
 	public String name(){
 		return name;
 	}
 	
-	public int identiferIndex() {
-		return identiferIndex;
+	
+	public String getType() {
+		return this.type;
 	}
 	
-	public String kindOf() {
-		return kind;
+	public int getCount() {
+		return this.count;
 	}
 	
-	public String typeOf() {
-		return type;
-	}
-	
-	public int kindIndex() {
-		return kindIndex;
-	}
 	
 }
