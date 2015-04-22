@@ -18,22 +18,32 @@ public class CompilationEngine {
 	private JackTokenizer test;
 	private String className;
 	private String subroutineName;
-	private HashMap<String, HashMap<String, HashMap<String, Integer>>> globalSymbolTable;
-	private HashMap<String, HashMap<String, HashMap<String, Integer>>> localSymbolTable;
+	
 	private int staticCount;
 	private int fieldCount;
 	private int argumentCount;
 	private int localCount;
 	private String kind;
-	private VMWriter vm = new VMWriter();
+	private HashMap<String,Integer> idet;
+
+	//private VMWriter vm = new VMWriter();
+	
+	
+	
+	
+	
 	
 	public CompilationEngine(String outFile, JackTokenizer jt) throws Exception {	
 		test = jt; 
-		while (jt.hasMoreTokens()) {
-			jt.advance();
+		
+		fw = new FileWriter(outFile);
+		while (test.hasMoreTokens()) {
+			test.advance();
+			fw.write(test.getNextToken()); // WRITING TO TEST FILE!
+			
 		// switch statements for calling methods
-			System.out.println(jt.getNextToken() + " type: " + jt.tokenType());
-			switch (jt.getNextToken()) {
+			System.out.println(test.getNextToken() + " type: " + test.tokenType());
+			switch (test.getNextToken()) {
 				case ("class"): {
 					this.compileClass();
 				}
@@ -54,6 +64,8 @@ public class CompilationEngine {
 	public void compileClass() throws IOException{			
 	while (test.hasMoreTokens()) {
 		test.advance();
+		fw.write(test.getNextToken()); // WRITING TO TEST FILE!
+		
 		switch (test.getNextToken()) {
 			case ("class"): {
 				this.className();
@@ -86,17 +98,20 @@ public class CompilationEngine {
 	
 	}
 	
-	public void className(){
+	public void className() throws IOException{
 		test.advance();
+		fw.write(test.getNextToken()); // WRITING TO TEST FILE!
 		className = test.getNextToken();
 		globalSymbolTable = new HashMap<String, HashMap<String, HashMap<String, Integer>>>();
 	}
 	
-	public void compileClassVarDec(){
+	public void compileClassVarDec() throws IOException{
 		//fill in global symbol table for static and field vars
 		test.advance();
+		
 		String type = test.getNextToken();
 		test.advance();
+	
 		String name = test.getNextToken();
 		int currentCount = this.getCorrespondingKindInteger(type);
 		HashMap <String, HashMap<String, Integer>> inner1 = new HashMap <String, HashMap<String, Integer>>();
@@ -301,7 +316,7 @@ public class CompilationEngine {
 		return -1;
 	}
 	
-	public void incrementCorrespondingInteger(String k) {
+	public void incrementCorrespondingInteger(String identifier) {
 		switch (k) {
 		case ("static"):
 			staticCount += 1;

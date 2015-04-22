@@ -2,40 +2,40 @@ package Compiler;
 
 public class Symbol {
 
-	private String name;
-	private String type;
-	private String kind;
-	private int runningIndex;
+	private String name = "";
+	private String type = "";
+	private String kind = "";
+	private int identiferIndex = 0;
+	private int kindIndex = 0;
 	
-	public Symbol(String n, String t, String k, int r) {
-		name = n;
-		type = t;
-		kind = k;
-		runningIndex = r;
+	
+	public Symbol(String name, String type, String kind, int identiferIndex, int kindIndex) {
+		this.name = name;
+		this.type = type;
+		this.kind = kind;
+		this.identiferIndex = identiferIndex;
+		this.kindIndex = kindIndex;
+		
 	}
 	
-	
-	public void define(String n, String t, String k, int i) {
-		name = n;
-		type = t;
-		kind = k;
-		runningIndex = i;
+	public String name(){
+		return name;
 	}
 	
-	public int varCount(String kind) {
-		return runningIndex;
+	public int identiferIndex() {
+		return identiferIndex;
 	}
 	
-	public String kindOf(String name) {
+	public String kindOf() {
 		return kind;
 	}
 	
-	public String typeOf(String name) {
+	public String typeOf() {
 		return type;
 	}
 	
-	public int indexOf(String name) {
-		
+	public int kindIndex() {
+		return kindIndex;
 	}
 	
 }
