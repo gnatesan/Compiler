@@ -2,28 +2,21 @@ package Compiler;
 
 public class Symbol {
 
-	private String name = "";
-	private String type = "";
-	private int count;
+	public String name;
+	public String type;
+	public String kind;
+	public int count;
 	
-	public Symbol(String n, String t, int value) {
-		this.name = name;
-		this.type = type;
-		this.count = value;
+	public Symbol(String n, String t, String k, int counter) {
+		name = n;
+		type = t;
+		if (k.equals("field"))
+			kind = "this";
+		else if (k.equals("var"))
+			kind = "local";
+		else 
+			kind = k;
+		count = counter;
 	}
-
-	public String name(){
-		return name;
-	}
-	
-	
-	public String getType() {
-		return this.type;
-	}
-	
-	public int getCount() {
-		return this.count;
-	}
-	
 	
 }

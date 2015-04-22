@@ -18,14 +18,20 @@ public class CompilationEngine {
 	private JackTokenizer test;
 	private String className;
 	private String subroutineName;
+	private String kind;
 	
 	private int staticCount;
 	private int fieldCount;
 	private int argumentCount;
-	private int localCount;
-	private String kind;
-	private HashMap<String,Integer> idet;
-
+	private int variableCount;
+	
+	private int staticLocal;
+	private int fieldLocal;
+	private int argumentLocal;
+	private int variableLocal;
+	
+	private SymbolTable global;
+	private SymbolTable local;
 	//private VMWriter vm = new VMWriter();
 	
 	
@@ -35,7 +41,6 @@ public class CompilationEngine {
 	
 	public CompilationEngine(String outFile, JackTokenizer jt) throws Exception {	
 		test = jt; 
-		
 		fw = new FileWriter(outFile);
 		while (test.hasMoreTokens()) {
 			test.advance();
@@ -64,19 +69,21 @@ public class CompilationEngine {
 	public void compileClass() throws IOException{			
 	while (test.hasMoreTokens()) {
 		test.advance();
-		fw.write(test.getNextToken()); // WRITING TO TEST FILE!
+		//fw.write(test.getNextToken()); // WRITING TO TEST FILE!
 		
 		switch (test.getNextToken()) {
 			case ("class"): {
 				this.className();
 			}
 			case ("static"): {
-				this.compileClassVarDec();
 				kind = "static";
+				this.compileClassVarDec();
+				
 			}
 			case ("field"): {
-				this.compileClassVarDec();
 				kind = "field";
+				this.compileClassVarDec();
+				
 			}
 			case ("constructor"): {
 				this.compileSubRoutine();
@@ -100,58 +107,50 @@ public class CompilationEngine {
 	
 	public void className() throws IOException{
 		test.advance();
-		fw.write(test.getNextToken()); // WRITING TO TEST FILE!
+		//fw.write(test.getNextToken()); // WRITING TO TEST FILE!
 		className = test.getNextToken();
-		globalSymbolTable = new HashMap<String, HashMap<String, HashMap<String, Integer>>>();
+		global = new SymbolTable();
 	}
 	
 	public void compileClassVarDec() throws IOException{
 		//fill in global symbol table for static and field vars
 		test.advance();
-		
 		String type = test.getNextToken();
 		test.advance();
 	
 		String name = test.getNextToken();
-		int currentCount = this.getCorrespondingKindInteger(type);
-		HashMap <String, HashMap<String, Integer>> inner1 = new HashMap <String, HashMap<String, Integer>>();
-		HashMap <String, Integer> inner2 = new HashMap <String, Integer>();
-		
-		if (!globalSymbolTable.containsKey(name)) {
-			currentCount += 1;
-			this.incrementCorrespondingInteger(name);
-			inner2.put(kind, currentCount);
-			inner1.put(type, inner2);
-			globalSymbolTable.put(name, inner1);
+		//int currentCount = this.varCount(type);
+		if (!global.getTest().containsKey(name)) {
+			global.define(name, type, kind, this.varCount(kind));
+			//currentCount += 1;
+			this.incrementCount(kind);
 		}
 		
 		while(test.peek().equals(",")) {
-			inner1.clear();
-			inner2.clear();
 			test.advance();
 			test.advance();
 			name = test.getNextToken();
-			if (!globalSymbolTable.containsKey(name)) {
-				currentCount += 1;
-				this.incrementCorrespondingInteger(name);
-				inner2.put(kind, currentCount);
-				inner1.put(type, inner2);
-				globalSymbolTable.put(name, inner1);
+			if (!global.getTest().containsKey(name)) {
+				global.define(name, type, kind, this.varCount(kind));
+				//currentCount += 1;
+				this.incrementCount(kind);
 			}
 		}
 	} 
 	
 	public void compileSubRoutine() throws IOException{
 		//get the type, deal with the subroutine Name, and parameter list
+		this.localClear();
+		local.startSubroutine();
 		test.advance(); //next token gives return type
-		test.advance();
+		test.advance(); //next token gives name of subroutine
 		subroutineName = test.getNextToken();
-		localCount = 0;
-		localSymbolTable = new HashMap <String, HashMap<String, HashMap<String, Integer>>>();
+		local = new SymbolTable();
 		test.advance(); //next token gives (
 		while(!test.peek().equals(")")) {
 			this.compileParameterList();
 		}
+		test.advance(); //next token gives )
 		while(test.peek().equals("var")) {
 			this.compileVarDec();
 		}
@@ -169,34 +168,23 @@ public class CompilationEngine {
 		//var int 5;
 		//var int 5,6;
 		test.advance();
+		String kind = test.getNextToken(); //var
+		test.advance();
 		String type = test.getNextToken(); //int
 		test.advance();
 		String name = test.getNextToken(); //5
-		int currentCount = this.getCorrespondingKindInteger("local");
-		HashMap <String, HashMap<String, Integer>> inner1 = new HashMap <String, HashMap<String, Integer>>();
-		HashMap <String, Integer> inner2 = new HashMap <String, Integer>();
-		
-		if (!localSymbolTable.containsKey(name)) {
-			currentCount += 1;
-			this.incrementCorrespondingInteger("local");
-			inner2.put(kind, currentCount);
-			inner1.put(type, inner2);
-			localSymbolTable.put(name, inner1);
-			localCount += 1;
+		//int currentCount = this.getCorrespondingKindInteger("local");
+		if (!local.getTest().containsKey(name)) {
+			local.define(name, type, kind, this.varLocal(kind));
+			this.incrementLocal(kind);
 		}
 		while(test.peek().equals(",")) {
-			inner1.clear();
-			inner2.clear();
 			test.advance(); //next token gives ,
 			test.advance(); 
 			name = test.getNextToken(); //6
-			if (!localSymbolTable.containsKey(name)) {
-				currentCount += 1;
-				this.incrementCorrespondingInteger("local");
-				inner2.put(kind, currentCount);
-				inner1.put("local", inner2);
-				localSymbolTable.put(name, inner1);
-				localCount += 1;
+			if (!local.getTest().containsKey(name)) {
+				local.define(name, type, kind, this.varLocal(kind));
+				this.incrementLocal(kind);
 			}
 		}
 		test.advance(); //next token gives ;
@@ -302,31 +290,81 @@ public class CompilationEngine {
 		
 	}
 	
-	public int getCorrespondingKindInteger(String k) {
-		switch (k) {
-		case ("static"):
+	public int varCount(String kind) {
+		switch(kind) {
+		case("static"): {
 			return staticCount;
-		case ("field"):
+		}
+		case("field"): {
 			return fieldCount;
-		case ("argument"):
+		}
+		case("var"): {
+			return variableCount;
+		}
+		case("argument"): {
 			return argumentCount;
-		case ("local"):
-			return localCount;
+		}
 		}
 		return -1;
 	}
 	
-	public void incrementCorrespondingInteger(String identifier) {
-		switch (k) {
-		case ("static"):
+	public void incrementCount(String kind) {
+		switch(kind) {
+		case("static"): {
 			staticCount += 1;
-		case ("field"):
-			fieldCount += 1;
-		case ("argument"):
-			argumentCount += 1;
-		case ("local"):
-			localCount += 1;
 		}
+		case("field"): {
+			fieldCount += 1;
+		}
+		case("var"): {
+			variableCount += 1;
+		}
+		case("argument"): {
+			argumentCount += 1;
+		}
+		}
+	}
+	
+	public int varLocal(String kind) {
+		switch(kind) {
+		case("static"): {
+			return staticLocal;
+		}
+		case("field"): {
+			return fieldLocal;
+		}
+		case("var"): {
+			return variableLocal;
+		}
+		case("argument"): {
+			return argumentLocal;
+		}
+		}
+		return -1;
+	}
+	
+	public void incrementLocal(String kind) {
+		switch(kind) {
+		case("static"): {
+			staticLocal += 1;
+		}
+		case("field"): {
+			fieldLocal += 1;
+		}
+		case("var"): {
+			variableLocal += 1;
+		}
+		case("argument"): {
+			argumentLocal += 1;
+		}
+		}
+	}
+	
+	public void localClear() {
+		variableLocal = 0;
+		fieldLocal = 0;
+		argumentLocal = 0;
+		staticLocal = 0;
 	}
 	
 	
