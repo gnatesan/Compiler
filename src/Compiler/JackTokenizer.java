@@ -13,7 +13,7 @@ public class JackTokenizer {
 		private StringTokenizer st;
 		String[] allTokens;
 		int var = 0;
-		
+		private HashMap<String, String> symbolXML;
 		private tokenType token;
 
 
@@ -48,7 +48,10 @@ public class JackTokenizer {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			
+			symbolXML = new HashMap<String, String>();
+			symbolXML.put("<", "&lt;");
+			symbolXML.put(">", "&gt;");
+			symbolXML.put("&", "&amp;");
 			while(in.hasNextLine() && in.hasNext()){
 				next = in.nextLine();
 				if (next.contains("//")) {
@@ -82,18 +85,36 @@ public class JackTokenizer {
 			if (wholeFile.contains("}")) {
 				wholeFile = wholeFile.replace("}", " } ");
 			}
+			if (wholeFile.contains("[")) {
+				wholeFile = wholeFile.replace("[", " [ ");
+			}
+			if (wholeFile.contains("]")) {
+				wholeFile = wholeFile.replace("]", " ] ");
+			}
 			if (wholeFile.contains(",")) {
 				wholeFile = wholeFile.replace(",", " , ");
 			}
+			if (wholeFile.contains("\"")) {
+				wholeFile = wholeFile.replace("\"", " \" ");
+			}
+			if (wholeFile.contains("-")) {
+				wholeFile = wholeFile.replace("-", " - ");
+			}
+			if (wholeFile.contains("~")) {
+				wholeFile = wholeFile.replace("~", " ~ ");
+			}
 			allTokens = wholeFile.split("\\s+");
-			/*for (String s : allTokens)
-				System.out.println(s);*/
+			//for (String s : allTokens)
+				//System.out.println(s);
 			//st = new StringTokenizer(wholeFile);
 		}
 		
 		
 		// Getter for nextToken
 		public String getNextToken() {
+			if (symbolXML.containsKey(nextToken)) {
+				return symbolXML.get(nextToken);
+			}
 			return nextToken;
 		}
 		public tokenType getToken() {
@@ -101,14 +122,26 @@ public class JackTokenizer {
 		}
 		
 		public boolean hasMoreTokens() {
-			if (masterCount != allTokens.length - 1)
+			if (masterCount < allTokens.length)
 				return true;
 			return false;
 		}
 		
-		public void advance() {
-			this.nextToken = allTokens[masterCount];
-			masterCount += 1;
+		public void advance() {	//"HOW MANY NUMBERS?  " -> " HOW MANY NUMBERS ? " 
+			if (allTokens[masterCount].equals("\"")) {
+				this.nextToken = allTokens[masterCount];
+				masterCount += 1;
+				while (!allTokens[masterCount].equals("\"")) {
+					this.nextToken += allTokens[masterCount];
+					masterCount += 1;
+				}
+				this.nextToken += allTokens[masterCount];
+				masterCount += 1;
+			}
+			else {
+				this.nextToken = allTokens[masterCount];
+				masterCount += 1;
+			}
 		}
 		
 		public tokenType tokenType() {
@@ -244,6 +277,9 @@ public class JackTokenizer {
 						case "_":
 							token = tokenType.SYMBOL;
 							break;
+						case "~":
+							token = tokenType.SYMBOL;
+							break;
 						}
 
 				if (token == tokenType.SYMBOL || token == tokenType.KEYWORD) {
@@ -345,14 +381,17 @@ public class JackTokenizer {
 		}
 		
 		public String stringVal() {
-			nextToken = nextToken.replaceAll("\"", "");
-			nextToken = nextToken.replaceAll("\n", "");
-			return nextToken;
+			String remove = nextToken.replaceAll("\"", "");
+			remove = remove.replaceAll("\n", "");
+			return remove;
+			//return nextToken.replaceAll("\"",  "");
 		}
 		
 		//retrieves value of next token without actually going to the next token
 		public String peek() {
-			return allTokens[masterCount + 1];
+			if (masterCount < allTokens.length)
+					return allTokens[masterCount];
+			return null;
 		}
 		
 		/*

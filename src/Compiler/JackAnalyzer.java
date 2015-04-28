@@ -1,16 +1,12 @@
 package Compiler;
 
-
+//have a compilationengine object for each ".jack" file, constuctor for CE should only take in the 
+//name of the jack file. inside CE constructor, instantiate VMWriter and JackTokenizer object
+//with the parameter as the name of the jack file
 public class JackAnalyzer {
 	
-	private String inputFile = "Square.jack";
-	private String outputFile = "test.txt";
-
-	
 	public static void main (String[] args) throws Exception {
-			JackAnalyzer ja = new JackAnalyzer();
-			JackTokenizer jt = new JackTokenizer(ja.inputFile);
-			CompilationEngine cs = new CompilationEngine (ja.outputFile, jt);
+			CompilationEngine cs = new CompilationEngine (args[0]);
 
 			
 
