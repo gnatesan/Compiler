@@ -7,7 +7,7 @@ import java.io.File;
 public class JackAnalyzer {
 	
 	public static void main (String[] args) throws Exception { //Z:/Elements/
-			File dir = new File("C:/Compiler/ConvertToBin");
+			File dir = new File("Z:/Elements/Compiler/Square");
 			if (dir.isFile()) {
 				System.out.println("asdsdsdff");
 				CompilationEngine cs = new CompilationEngine (dir.getName());
@@ -17,7 +17,7 @@ public class JackAnalyzer {
 				for (File f : dir.listFiles()) {
 					if (f.getName().endsWith(".jack")) {
 						System.out.println("d" + f.getName() + "d");
-						CompilationEngine cs = new CompilationEngine ("C:/Compiler/ConvertToBin/" + f.getName());
+						CompilationEngine cs = new CompilationEngine ("Z:/Elements/Compiler/Square/" + f.getName());
 					}
 				}
 			}

@@ -363,11 +363,11 @@ public class CompilationEngine {
 		}
 	}
 
-	//do Screen.setColor(true);
 	public void compileDo() throws IOException {
-		tempClassName = "";
-		tempSubroutineName = "";
-		boolean noPeriod = false;
+		String tempClassNamet = "";
+		String tempSubroutineNamet = "";
+		String tempVarNamet = "";
+		boolean Period = false;
 		fw.write("<" + test.tokenType() + "> " + test.getNextToken() + " </" + test.tokenType() + ">" );
 		fw.write(System.lineSeparator());		
 		while(!test.peek().equals(";")) {
@@ -375,22 +375,28 @@ public class CompilationEngine {
 			fw.write("<" + test.tokenType() + "> " + test.getNextToken() + " </" + test.tokenType() + ">" );
 			fw.write(System.lineSeparator());
 			if (test.peek().equals("(")) {
-				tempSubroutineName = test.getNextToken();
+				tempSubroutineNamet = test.getNextToken();
 			}
 			if (test.getNextToken().equals("(")) {
-				if (!noPeriod) { //className.subroutineName(expressionList)
+				if (!Period) { //className.subroutineName(expressionList)
 					vm.WritePush("pointer", 0);
 				}
 				this.CompileExpressionList();
-				vm.WriteCall(tempClassName + "." + tempSubroutineName, numExpressions);
+				vm.WriteCall(tempClassNamet + "." + tempSubroutineNamet, numExpressions);
 			}
 			else if (test.peek().equals(".")) {
-				tempClassName = test.getNextToken();
-				noPeriod = true;
+					if (allSymbols.indexOf(test.getNextToken()) != -1 ) { //local variable
+						tempVarNamet = test.getNextToken();
+						vm.WritePush(allSymbols.kindOf(tempVarNamet), numExpressions);
+						tempClassNamet = allSymbols.typeOf(test.getNextToken());
+					}
+					else { //className
+						
+						tempClassNamet = test.getNextToken();
+					}
+				Period = true;
 			}
 		}
-		//test.advance();
-		//this.compileSubroutineCall();
 		test.advance();
 		fw.write("<" + test.tokenType() + "> " + test.getNextToken() + " </" + test.tokenType() + ">" );
 		fw.write(System.lineSeparator());
