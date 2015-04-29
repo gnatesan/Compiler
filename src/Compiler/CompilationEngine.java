@@ -21,7 +21,10 @@ public class CompilationEngine {
 	private String name;
 	private String type;
 	private String kind;
-
+	
+	private int numWhile;
+	private int numIf;
+	
 	private int numExpressions;
 	private String tempClassName;
 	private String tempSubroutineName;
@@ -431,6 +434,9 @@ public class CompilationEngine {
 	}
 
 	public void compileWhile() throws IOException {
+		int tempWhile = numWhile;
+		vm.WriteLabel("WHILE_" + Integer.toString(numWhile));
+		numWhile++;
 		fw.write("<" + test.tokenType() + "> " + test.getNextToken() + " </" + test.tokenType() + ">"); //let
 		fw.write(System.lineSeparator());
 		test.advance(); //next token is (
@@ -446,6 +452,8 @@ public class CompilationEngine {
 		test.advance(); //next token is )
 		fw.write("<" + test.tokenType() + "> " + test.getNextToken() + " </" + test.tokenType() + ">");
 		fw.write(System.lineSeparator());
+		vm.WriteArithmetic("not");
+		vm.WriteIf("WHILE_END_" + Integer.toString(tempWhile));
 		test.advance(); //next token is {
 		fw.write("<" + test.tokenType() + "> " + test.getNextToken() + " </" + test.tokenType() + ">");
 		fw.write(System.lineSeparator());
@@ -456,6 +464,8 @@ public class CompilationEngine {
 				test.peek().equals("return")) {
 			this.compileStatements();
 		}
+	vm.WriteGoto("WHILE_" + Integer.toString(tempWhile));
+	vm.WriteLabel("WHILE_END_" + Integer.toString(tempWhile));
 	fw.write("</statements>" );
 	fw.write(System.lineSeparator());
 	test.advance();
@@ -475,13 +485,12 @@ public class CompilationEngine {
 					fw.write("</expression>");
 					fw.write(System.lineSeparator());
 			}
+			vm.WriteReturn();
 		}
 		else {
 			vm.WritePush("constant", 0);
 			vm.WriteReturn();
 		}
-		
-		
 		
 		
 		test.advance();
@@ -490,6 +499,8 @@ public class CompilationEngine {
 	}
 
 	public void compileIf() throws IOException{
+			int tempIf = numIf;
+			numIf++;
 			fw.write("<" + test.tokenType() + "> " + test.getNextToken() + " </" + test.tokenType() + ">"); //return
 			fw.write(System.lineSeparator());	
 			test.advance(); //next token is (
@@ -503,6 +514,8 @@ public class CompilationEngine {
 				fw.write(System.lineSeparator());
 			}
 			test.advance(); //next token is )
+			vm.WriteArithmetic("not");
+			vm.WriteIf("IF_FALSE_" + Integer.toString(tempIf));
 			fw.write("<" + test.tokenType() + "> " + test.getNextToken() + " </" + test.tokenType() + ">");
 			fw.write(System.lineSeparator());
 			test.advance(); //next token is {
@@ -515,6 +528,8 @@ public class CompilationEngine {
 					test.peek().equals("return")) {
 				this.compileStatements();
 			}
+			vm.WriteGoto("IF_END_" + Integer.toString(tempIf));
+			vm.WriteLabel("IF_FALSE_" + Integer.toString(tempIf));
 		fw.write("</statements>" );
 		fw.write(System.lineSeparator());
 		test.advance();
@@ -541,18 +556,22 @@ public class CompilationEngine {
 			fw.write("<" + test.tokenType() + "> " + test.getNextToken() + " </" + test.tokenType() + ">");
 			fw.write(System.lineSeparator());
 		}
+		vm.WriteLabel("IF_END_" + Integer.toString(tempIf));
 	}
 
 	public void CompileExpression() throws IOException { 
-		test.advance(); //next token is x
+		test.advance(); //next token is -
+		System.out.println("NEXT TOKEN IS " + test.getNextToken());
 		fw.write("<term>");
 		fw.write(System.lineSeparator());
 		this.CompileTerm(); 
 		fw.write("</term>");
 		fw.write(System.lineSeparator());
-		while (op.contains(test.peek())) { 
+		while (op.contains(test.peek())) {
+			System.out.println("TERM IS " + test.peek());
 			test.advance();
 			String command = test.getNextToken();
+			System.out.println("COMMAND IS " + command);
 			fw.write("<" + test.tokenType() + "> " + test.getNextToken() + " </" + test.tokenType() + ">"); //operation is stored here
 			fw.write(System.lineSeparator());
 			test.advance();
@@ -592,8 +611,11 @@ public class CompilationEngine {
 				
 				switch (test.getNextToken()){
 				case "true":
+					vm.WritePush("constant", 0);
+					vm.WriteArithmetic("not");
 					break;
 				case "false":
+					vm.WritePush("constant", 0);
 					break;
 				case "null":
 					break;
@@ -666,6 +688,8 @@ public class CompilationEngine {
 		// or a parameter)
 		case ("symbol"): {
 			if (test.getNextToken().equals("-") || test.getNextToken().equals("~")) {
+				String unary = test.getNextToken();
+				System.out.println("unary" + unary);
 				fw.write("<" + test.tokenType() + "> " + test.getNextToken() + " </" + test.tokenType() + ">");
 				fw.write(System.lineSeparator());
 				test.advance();
@@ -674,6 +698,12 @@ public class CompilationEngine {
 				this.CompileTerm();
 				fw.write("</term>");
 				fw.write(System.lineSeparator());
+				if (unary.equals("-")) {
+					vm.WriteArithmetic("neg");
+				}
+				else {
+					vm.WriteArithmetic("not");
+				}
 			}
 			else if (test.getNextToken().equals("(")) {
 				fw.write("<" + test.tokenType() + "> " + test.getNextToken() + " </" + test.tokenType() + ">" );
@@ -724,13 +754,13 @@ public class CompilationEngine {
 		fw.write(System.lineSeparator());
 	}
 	
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		try {
 			CompilationEngine e = new CompilationEngine("Main.jack");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
+	}*/
 
 }

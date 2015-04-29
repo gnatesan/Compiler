@@ -6,6 +6,8 @@ import java.io.File;
 
 public class VMWriter {
 private FileWriter fw;
+private String whileExp = "WHILE_EXP";
+private int whileCount = 0;
 
 public VMWriter(String outputFile) throws IOException {
 	outputFile = outputFile.replace(".jack", ".vm");
@@ -33,6 +35,10 @@ public void WriteArithmetic(String command) throws IOException {
 		 fw.write("sub");
 		 fw.write(System.lineSeparator());
 		 break;
+	 case "neg":
+		 fw.write("neg");
+		 fw.write(System.lineSeparator());
+		 break;
 	 case "*":
 		 fw.write("call Math.multiply 2");
 		 fw.write(System.lineSeparator());
@@ -41,7 +47,26 @@ public void WriteArithmetic(String command) throws IOException {
 		 fw.write("call Math.divide 2");
 		 fw.write(System.lineSeparator());
 		 break; 
-		
+	 case "not":
+		 fw.write("not");
+		 fw.write(System.lineSeparator());
+		 break;
+	 case "&gt;":
+		 fw.write("gt");
+		 fw.write(System.lineSeparator());
+		 break; 
+	 case "<":
+		 fw.write("lt");
+		 fw.write(System.lineSeparator());
+		 break; 
+	 case "=":
+		 fw.write("eq");
+		 fw.write(System.lineSeparator());
+		 break;
+	 case "&amp;":
+		 fw.write("and");
+		 fw.write(System.lineSeparator());
+		 break;	 
 	 }
 }
 
@@ -51,12 +76,12 @@ public void WriteLabel(String label) throws IOException {
 }
 
 public void WriteGoto(String label) throws IOException {
-	fw.write("goto" + label);
+	fw.write("goto " + label);
 	fw.write(System.lineSeparator());
 }
 
 public void WriteIf(String label) throws IOException {
-	fw.write("if-goto" + label);
+	fw.write("if-goto " + label);
 	fw.write(System.lineSeparator());
 }
 
