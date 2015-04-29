@@ -14,6 +14,7 @@ public class JackAnalyzer {
 			else if (dir.isDirectory()) {
 				for (File f : dir.listFiles()) {
 					if (f.getName().endsWith(".jack")) {
+						System.out.println(f.getName());
 						CompilationEngine cs = new CompilationEngine (f.getName());
 					}
 				}

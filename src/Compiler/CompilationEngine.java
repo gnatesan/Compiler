@@ -16,6 +16,7 @@ public class CompilationEngine {
 	private VMWriter vm;
 	private String className;
 	private String subroutineName;
+	private String varName;
 	
 	private String name;
 	private String type;
@@ -222,6 +223,39 @@ public class CompilationEngine {
 		System.out.println();
 	}
 
+	public void compileSubroutineCall() throws IOException {
+		String tempClassName = "";
+		String tempSubroutineName = "";
+		if (test.peek().equals("(")) { 
+			vm.WritePush("pointer", 0);
+			tempSubroutineName = test.getNextToken();
+			test.advance();
+			this.CompileExpressionList();
+			vm.WriteCall(className + "." + tempSubroutineName, numExpressions);
+		}
+		else {
+			if (allSymbols.indexOf(test.getNextToken()) == -1) {
+				tempClassName = test.getNextToken();
+				test.advance(); //next token is .
+				test.advance();
+				tempSubroutineName = test.getNextToken();
+				test.advance();
+				this.CompileExpressionList();
+				vm.WriteCall(tempClassName + "." + tempSubroutineName, numExpressions);
+			}
+			else {
+				tempClassName = allSymbols.typeOf(test.getNextToken());
+				vm.WritePush(allSymbols.kindOf(test.getNextToken()), allSymbols.indexOf(test.getNextToken()));
+				test.advance(); //next token is .
+				test.advance();
+				tempSubroutineName = test.getNextToken();
+				test.advance();
+				this.CompileExpressionList();
+				vm.WriteCall(tempClassName + "." + tempSubroutineName, numExpressions);
+			}
+		}
+	}
+	
 	public void compileParameterList() throws IOException {
 		//System.out.println(test.peek()); 
 		while (!test.peek().equals(")")) {
@@ -246,6 +280,7 @@ public class CompilationEngine {
 	public void compileVarDec() throws IOException{
 		// var int 5;
 		// var int 5,6;
+		
 		test.advance();
 		fw.write("<" + test.tokenType() + "> " + test.getNextToken() + " </" + test.tokenType() + ">" );
 		fw.write(System.lineSeparator());
@@ -351,6 +386,8 @@ public class CompilationEngine {
 				noPeriod = true;
 			}
 		}
+		//test.advance();
+		//this.compileSubroutineCall();
 		test.advance();
 		fw.write("<" + test.tokenType() + "> " + test.getNextToken() + " </" + test.tokenType() + ">" );
 		fw.write(System.lineSeparator());
@@ -362,6 +399,9 @@ public class CompilationEngine {
 		fw.write("<" + test.tokenType() + "> " + test.getNextToken() + " </" + test.tokenType() + ">" ); //let
 		fw.write(System.lineSeparator());
 		while(!test.peek().equals(";")) {
+			if (test.peek().equals("=")) {
+				varName = test.getNextToken();
+			}
 			test.advance();
 			fw.write("<" + test.tokenType() + "> " + test.getNextToken() + " </" + test.tokenType() + ">"); //length = 
 			fw.write(System.lineSeparator());
@@ -373,7 +413,19 @@ public class CompilationEngine {
 				fw.write(System.lineSeparator());
 			}
 		}
+		System.out.println(varName + " varname");
 		test.advance();
+		/*for (String s : allSymbols.local.keySet()) {
+			System.out.println(s);
+			System.out.println(varName);
+			if (s.equals(varName))
+				System.out.println("yrsy");
+		}*/
+		/*System.out.println("ASDfsadf");
+		System.out.println(allSymbols.kindOf(varName));
+		if (allSymbols.local.containsKey(varName))
+			System.out.println("true");*/
+		vm.WritePop(allSymbols.kindOf(varName), allSymbols.indexOf(varName));
 		fw.write("<" + test.tokenType() + "> " + test.getNextToken() + " </" + test.tokenType() + ">");
 		fw.write(System.lineSeparator());
 	}
@@ -573,7 +625,7 @@ public class CompilationEngine {
 			
 			//subroutineName(expessionlist) className.subroutineName varName.subroutineName
 			else if (test.peek().equals("(")) {
-				System.out.println("entered");
+				/*System.out.println("entered");
 				fw.write("<" + test.tokenType() + "> " + test.getNextToken() + " </" + test.tokenType() + ">");
 				fw.write(System.lineSeparator());
 				test.advance();
@@ -582,24 +634,27 @@ public class CompilationEngine {
 				//test.advance();
 				
 				this.CompileExpressionList();
-				//vm.WriteCall(className + "." + subroutineName, numExpressions);
+				vm.WriteCall(className + "." + subroutineName, numExpressions);
 				test.advance();
 				fw.write("<" + test.tokenType() + "> " + test.getNextToken() + " </" + test.tokenType() + ">");
-				fw.write(System.lineSeparator());
+				fw.write(System.lineSeparator());*/
+				this.compileSubroutineCall();
 				
 			}
 			else if (test.peek().equals(".")) {
-				fw.write("<" + test.tokenType() + "> " + test.getNextToken() + " </" + test.tokenType() + ">");
+				/*fw.write("<" + test.tokenType() + "> " + test.getNextToken() + " </" + test.tokenType() + ">");
 				fw.write(System.lineSeparator());
 				test.advance();
 				fw.write("<" + test.tokenType() + "> " + test.getNextToken() + " </" + test.tokenType() + ">");
 				fw.write(System.lineSeparator());
 				test.advance();
-				this.CompileTerm();
+				this.CompileTerm();*/
+				this.compileSubroutineCall();
 			}
 			//varName
 			else {
 				//System.out.println("var name " + test.getNextToken());
+				vm.WritePush(allSymbols.kindOf(test.getNextToken()), allSymbols.indexOf(test.getNextToken()));
 				fw.write("<" + test.tokenType() + "> " + test.getNextToken() + " </" + test.tokenType() + ">"); //i
 				fw.write(System.lineSeparator());
 			}
