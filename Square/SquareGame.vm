@@ -1,5 +1,8 @@
 function SquareGame.new 0
 push constant 0
+call Memory.alloc 1
+pop pointer 0
+push constant 0
 push constant 0
 push constant 30
 call Square.new 3
@@ -8,6 +11,8 @@ push constant 0
 pop this 1
 return
 function SquareGame.dispose 0
+push argument 0
+pop pointer 0
 push this 3
 call Square.dispose 0
 pop temp 0
@@ -16,6 +21,8 @@ pop temp 0
 push constant 0
 return
 function SquareGame.run 2
+push argument 0
+pop pointer 0
 push constant 0
 pop local 1
 label WHILE_0
@@ -128,6 +135,8 @@ label WHILE_END_0
 push constant 0
 return
 function SquareGame.moveSquare 0
+push argument 0
+pop pointer 0
 push this 1
 push constant 1
 eq

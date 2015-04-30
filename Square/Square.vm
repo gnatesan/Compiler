@@ -1,4 +1,7 @@
 function Square.new 0
+push constant 3
+call Memory.alloc 1
+pop pointer 0
 push argument 0
 pop this 0
 push argument 1
@@ -10,11 +13,15 @@ call .draw 0
 pop temp 0
 return
 function Square.dispose 0
+push argument 0
+pop pointer 0
 call Memory.deAlloc 1
 pop temp 0
 push constant 0
 return
 function Square.draw 0
+push argument 0
+pop pointer 0
 push constant 0
 not
 call Screen.setColor 1
@@ -32,6 +39,8 @@ pop temp 0
 push constant 0
 return
 function Square.erase 0
+push argument 0
+pop pointer 0
 push constant 0
 call Screen.setColor 1
 pop temp 0
@@ -48,6 +57,8 @@ pop temp 0
 push constant 0
 return
 function Square.incSize 0
+push argument 0
+pop pointer 0
 push this 1
 push this 2
 add
@@ -75,6 +86,8 @@ label IF_END_0
 push constant 0
 return
 function Square.decSize 0
+push argument 0
+pop pointer 0
 push this 2
 push constant 2
 gt
@@ -96,6 +109,8 @@ label IF_END_1
 push constant 0
 return
 function Square.moveUp 0
+push argument 0
+pop pointer 0
 push this 1
 push constant 1
 gt
@@ -142,6 +157,8 @@ label IF_END_2
 push constant 0
 return
 function Square.moveDown 0
+push argument 0
+pop pointer 0
 push this 1
 push this 2
 add
@@ -189,6 +206,8 @@ label IF_END_3
 push constant 0
 return
 function Square.moveLeft 0
+push argument 0
+pop pointer 0
 push this 0
 push constant 1
 gt
@@ -235,6 +254,8 @@ label IF_END_4
 push constant 0
 return
 function Square.moveRight 0
+push argument 0
+pop pointer 0
 push this 0
 push this 2
 add
